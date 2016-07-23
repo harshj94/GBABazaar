@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="gbabazaar.gbabazaar.LoggedIn">
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="100"
+        android:title="Logout"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_profile"
+        android:orderInCategory="2"
+        android:title="My Profile"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_myads"
+        android:orderInCategory="1"
+        android:title="My Ads"
+        app:showAsAction="never" />
+</menu>
