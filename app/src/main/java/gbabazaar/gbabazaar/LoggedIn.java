@@ -213,6 +213,7 @@ public class LoggedIn extends AppCompatActivity {
             items.clear();
             List<ParseObject> objects = null;
             parseQuery = ParseQuery.getQuery("Advertisement");
+            parseQuery.orderByDescending("createdAt");
             parseQuery.fromLocalDatastore();
             try {
                 objects = parseQuery.find();

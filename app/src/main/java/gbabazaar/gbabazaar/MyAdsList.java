@@ -1,10 +1,13 @@
 package gbabazaar.gbabazaar;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -28,6 +31,7 @@ public class MyAdsList extends AppCompatActivity {
     ArrayList<Item> items;
     ListView listView;
     Item item;
+    ProgressDialog csprogress;
     private ItemsAdapter adapter;
 
     @Override
@@ -36,6 +40,8 @@ public class MyAdsList extends AppCompatActivity {
         setContentView(R.layout.activity_my_ads_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         items = new ArrayList<>();
         listView = (ListView) findViewById(R.id.list);
@@ -62,19 +68,33 @@ public class MyAdsList extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
-//                Item i1 = items.get(i);
-//                it.putExtra("objectId", i1.gettObjectId());
-//                startActivity(it);
+                Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
+                Item i1 = items.get(i);
+                it.putExtra("objectId", i1.gettObjectId());
+                startActivity(it);
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private class AdLoad extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            csprogress = new ProgressDialog(MyAdsList.this);
+            csprogress.setCancelable(false);
+            csprogress.setMessage("Please wait...");
+            csprogress.show();
         }
 
         @Override
@@ -112,6 +132,7 @@ public class MyAdsList extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             adapter.notifyDataSetChanged();
+            csprogress.dismiss();
         }
     }
 }
