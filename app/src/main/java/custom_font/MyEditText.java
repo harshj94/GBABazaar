@@ -8,7 +8,7 @@ import android.widget.EditText;
 /**
  * Created by harsh on 3/12/15.
  */
-public class MyEditText extends EditText{
+public class MyEditText extends EditText {
 
     public MyEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);

@@ -17,4 +17,10 @@
         android:orderInCategory="1"
         android:title="My Ads"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_aboutus"
+        android:orderInCategory="5"
+        android:title="About Us"
+        app:showAsAction="never" />
 </menu>

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -32,6 +33,10 @@ import java.util.List;
 
 import me.nereo.multi_image_selector.MultiImageSelector;
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
+import rebus.permissionutils.AskagainCallback;
+import rebus.permissionutils.FullCallback;
+import rebus.permissionutils.PermissionEnum;
+import rebus.permissionutils.PermissionManager;
 
 public class AdUpload extends AppCompatActivity {
 
@@ -137,6 +142,28 @@ public class AdUpload extends AppCompatActivity {
                 }
             }
         });
+
+        PermissionManager.with(AdUpload.this)
+                .permission(PermissionEnum.WRITE_EXTERNAL_STORAGE,PermissionEnum.CAMERA)
+                .askagain(true)
+                .askagainCallback(new AskagainCallback() {
+                    @Override
+                    public void showRequestPermission(UserResponse response) {
+                        showDialog(1);
+                    }
+                })
+                .callback(new FullCallback() {
+                    @Override
+                    public void result(ArrayList<PermissionEnum> permissionsGranted, ArrayList<PermissionEnum> permissionsDenied, ArrayList<PermissionEnum> permissionsDeniedForever, ArrayList<PermissionEnum> permissionsAsked) {
+                    }
+                })
+                .ask();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionManager.handleResult(requestCode, permissions, grantResults);
     }
 
     @Override
