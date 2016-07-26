@@ -160,6 +160,29 @@ public class LoggedIn extends AppCompatActivity {
                     })
                     .show();
         }
+
+        if (id == R.id.action_aboutDeveloper) {
+            new AlertDialog.Builder(LoggedIn.this)
+                    .setTitle("Developer")
+                    .setMessage("Email:\tharshkumarjain1994@gmail.com\nMobile:\t+91 9168004402")
+                    .setNegativeButton("Call Us", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(Intent.ACTION_DIAL);
+                            intent.setData(Uri.parse("tel:+919168004402"));
+                            startActivity(intent);
+                        }
+                    })
+                    .setNeutralButton("Email Us", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "harshkumarjain1994@gmail.com", null));
+                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "");
+                            emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+                            startActivity(Intent.createChooser(emailIntent, "Send email..."));
+                        }
+                    })
+                    .show();
+        }
         return super.onOptionsItemSelected(item);
     }
 

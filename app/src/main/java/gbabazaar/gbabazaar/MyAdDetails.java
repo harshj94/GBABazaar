@@ -1,6 +1,7 @@
 package gbabazaar.gbabazaar;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.view.Gravity;
@@ -154,7 +156,21 @@ public class MyAdDetails extends AppCompatActivity {
             call.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new DeleteAd().execute();
+                    new AlertDialog.Builder(MyAdDetails.this)
+                            .setTitle("Delete")
+                            .setMessage("Are you sure you want to delete?")
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    new DeleteAd().execute();
+                                }
+                            })
+                            .show();
                 }
             });
 
