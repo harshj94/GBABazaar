@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.stephentuso.welcome.WelcomeScreenHelper;
 
 import custom_font.MyTextView;
 
@@ -26,11 +27,15 @@ public class MainActivity extends AppCompatActivity {
     TextView login;
     MyTextView create;
     ProgressDialog csprogress;
+    WelcomeScreenHelper welcomeScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        welcomeScreen = new WelcomeScreenHelper(this, MyWelcomeActivity.class);
+        welcomeScreen.show(savedInstanceState);
 
         new Login().execute();
 
@@ -109,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        welcomeScreen.onSaveInstanceState(outState);
     }
 
     private class Login extends AsyncTask<Void, Void, Void> {

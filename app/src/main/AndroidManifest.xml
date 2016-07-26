@@ -65,6 +65,9 @@
             android:name=".MyAdDetails"
             android:label="@string/title_activity_my_ads_list"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MyWelcomeActivity"
+            android:theme="@style/WelcomeScreenTheme" />
     </application>
 
 </manifest>

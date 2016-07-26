@@ -30,4 +30,5 @@ dependencies {
     compile 'com.github.lovetuzitong:MultiImageSelector:1.2'
     compile 'com.jaredrummler:material-spinner:1.0.9'
     compile 'rebus:permission-utils:1.0.1'
+    compile 'com.stephentuso:welcome:0.7.2'
 }
