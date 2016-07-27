@@ -1,10 +1,12 @@
 package gbabazaar.gbabazaar;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -88,6 +90,8 @@ public class MyAdsList extends AppCompatActivity {
     }
 
     private class AdLoad extends AsyncTask<Void, Void, Void> {
+        Boolean result;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -99,31 +103,35 @@ public class MyAdsList extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            items.clear();
-            List<ParseObject> objects = null;
-            parseQuery = ParseQuery.getQuery("Advertisement");
-            parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
-            parseQuery.orderByDescending("createdAt");
-            parseQuery.setLimit(1000);
-            try {
-                objects = parseQuery.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            assert objects != null;
-            for (i = 0; i < objects.size(); i++) {
-                parseObject = objects.get(i);
-                item = new Item();
-                item.settTitle(parseObject.getString("Title"));
-                item.settCategory(parseObject.getString("Category"));
-                item.settObjectId(parseObject.getObjectId());
-                ParseFile parseFile = parseObject.getParseFile("image0");
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            if (result) {
+                items.clear();
+                List<ParseObject> objects = null;
+                parseQuery = ParseQuery.getQuery("Advertisement");
+                parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
+                parseQuery.orderByDescending("createdAt");
+                parseQuery.setLimit(1000);
                 try {
-                    item.settImageBitmap(parseFile.getData());
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
+                    objects = parseQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                items.add(item);
+                assert objects != null;
+                for (i = 0; i < objects.size(); i++) {
+                    parseObject = objects.get(i);
+                    item = new Item();
+                    item.settTitle(parseObject.getString("Title"));
+                    item.settCategory(parseObject.getString("Category"));
+                    item.settObjectId(parseObject.getObjectId());
+                    ParseFile parseFile = parseObject.getParseFile("image0");
+                    try {
+                        item.settImageBitmap(parseFile.getData());
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                    items.add(item);
+                }
             }
             return null;
         }
@@ -133,6 +141,19 @@ public class MyAdsList extends AppCompatActivity {
             super.onPostExecute(aVoid);
             adapter.notifyDataSetChanged();
             csprogress.dismiss();
+            if (!result) {
+                new AlertDialog.Builder(MyAdsList.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new AdLoad().execute();
+                            }
+                        })
+                        .show();
+            }
         }
     }
 }

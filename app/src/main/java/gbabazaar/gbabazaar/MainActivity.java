@@ -124,15 +124,49 @@ public class MainActivity extends AppCompatActivity {
 
     private class Login extends AsyncTask<Void, Void, Void> {
 
+        Boolean result;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            csprogress = new ProgressDialog(MainActivity.this);
+            csprogress.show();
+            csprogress.setCancelable(false);
+            csprogress.setMessage("Please wait...");
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
-            ParseUser parseUser = ParseUser.getCurrentUser();
-            if (parseUser != null) {
-                Intent it = new Intent(MainActivity.this, LoggedIn.class);
-                startActivity(it);
-                finish();
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            if (result) {
+                ParseUser parseUser = ParseUser.getCurrentUser();
+                if (parseUser != null) {
+                    Intent it = new Intent(MainActivity.this, LoggedIn.class);
+                    startActivity(it);
+                    finish();
+                }
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            csprogress.dismiss();
+            if (!result) {
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new Login().execute();
+                            }
+                        })
+                        .show();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package gbabazaar.gbabazaar;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -144,7 +146,7 @@ public class AdUpload extends AppCompatActivity {
         });
 
         PermissionManager.with(AdUpload.this)
-                .permission(PermissionEnum.WRITE_EXTERNAL_STORAGE,PermissionEnum.CAMERA)
+                .permission(PermissionEnum.WRITE_EXTERNAL_STORAGE, PermissionEnum.CAMERA)
                 .askagain(true)
                 .askagainCallback(new AskagainCallback() {
                     @Override
@@ -217,6 +219,8 @@ public class AdUpload extends AppCompatActivity {
 
     private class NetCheck extends AsyncTask<String, String, Void> {
 
+        Boolean result;
+
         @Override
         protected void onPreExecute() {
             csprogress = new ProgressDialog(AdUpload.this);
@@ -228,38 +232,43 @@ public class AdUpload extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... args) {
 
-            file = new ParseFile[path.size()];
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            if (result) {
 
-            for (i = 0; i < path.size(); i++) {
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(path.get(i));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                file = new ParseFile[path.size()];
+
+                for (i = 0; i < path.size(); i++) {
+                    FileInputStream fis = null;
+                    try {
+                        fis = new FileInputStream(path.get(i));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Bitmap imageBitmap = BitmapFactory.decodeStream(fis);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    imageBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                    byte[] image = stream.toByteArray();
+                    file[i] = new ParseFile("image" + i + ".jpeg", image);
+                    String s = "image" + i;
+                    parseObject.put(s, file[i]);
                 }
-                Bitmap imageBitmap = BitmapFactory.decodeStream(fis);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream);
-                byte[] image = stream.toByteArray();
-                file[i] = new ParseFile("image" + i + ".jpeg", image);
-                String s = "image" + i;
-                parseObject.put(s, file[i]);
-            }
-            parseObject.put("UserObjectId", object_id);
-            parseObject.put("Name", name_);
-            parseObject.put("Mobile", mobile_);
-            parseObject.put("City", city_);
-            parseObject.put("Title", title_);
-            parseObject.put("Description", description_);
-            parseObject.put("Rate", rate_);
-            parseObject.put("Category", category);
-            parseObject.put("Status", "pending");
-            parseObject.put("Images", path.size());
+                parseObject.put("UserObjectId", object_id);
+                parseObject.put("Name", name_);
+                parseObject.put("Mobile", mobile_);
+                parseObject.put("City", city_);
+                parseObject.put("Title", title_);
+                parseObject.put("Description", description_);
+                parseObject.put("Rate", rate_);
+                parseObject.put("Category", category);
+                parseObject.put("Status", "pending");
+                parseObject.put("Images", path.size());
 
-            try {
-                parseObject.save();
-            } catch (ParseException e) {
-                s = e.getMessage();
+                try {
+                    parseObject.save();
+                } catch (ParseException e) {
+                    s = e.getMessage();
+                }
             }
             return null;
         }
@@ -267,6 +276,19 @@ public class AdUpload extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             csprogress.dismiss();
+            if (!result) {
+                new AlertDialog.Builder(AdUpload.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new NetCheck().execute();
+                            }
+                        })
+                        .show();
+            }
             if (s.equals("")) {
                 Toast.makeText(getApplicationContext(), "Your ad has been submitted for review.", Toast.LENGTH_LONG).show();
                 Intent it = new Intent(AdUpload.this, AdUpload.class);

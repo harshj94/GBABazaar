@@ -64,6 +64,9 @@ public class MyAdDetails extends AppCompatActivity {
     }
 
     private class FetchAdDetails extends AsyncTask<Void, Void, Void> {
+
+        Boolean result;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -76,22 +79,27 @@ public class MyAdDetails extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            parseQuery = ParseQuery.getQuery("Advertisement");
-            parseQuery.orderByDescending("createdAt");
-            try {
-                parseObject = parseQuery.get(objectId);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            images = parseObject.getInt("Images");
-            int j;
-            bytes = new byte[images][];
-            for (j = 0; j < images; j++) {
-                ParseFile parseFile = parseObject.getParseFile("image" + j + "");
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            if (result) {
+
+                parseQuery = ParseQuery.getQuery("Advertisement");
+                parseQuery.orderByDescending("createdAt");
                 try {
-                    bytes[j] = parseFile.getData();
+                    parseObject = parseQuery.get(objectId);
                 } catch (ParseException e) {
                     e.printStackTrace();
+                }
+                images = parseObject.getInt("Images");
+                int j;
+                bytes = new byte[images][];
+                for (j = 0; j < images; j++) {
+                    ParseFile parseFile = parseObject.getParseFile("image" + j + "");
+                    try {
+                        bytes[j] = parseFile.getData();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             return null;
@@ -100,6 +108,19 @@ public class MyAdDetails extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            if (!result) {
+                new AlertDialog.Builder(MyAdDetails.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new FetchAdDetails().execute();
+                            }
+                        })
+                        .show();
+            }
             title = (TextView) findViewById(R.id.title);
             category = (TextView) findViewById(R.id.category);
             rate = (TextView) findViewById(R.id.rate);
@@ -179,6 +200,8 @@ public class MyAdDetails extends AppCompatActivity {
     }
 
     private class DeleteAd extends AsyncTask<Void, Void, Void> {
+        Boolean result;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -190,10 +213,14 @@ public class MyAdDetails extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            try {
-                parseObject.delete();
-            } catch (ParseException e) {
-                e.printStackTrace();
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            if (result) {
+                try {
+                    parseObject.delete();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
@@ -202,6 +229,19 @@ public class MyAdDetails extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             csprogress.dismiss();
+            if (!result) {
+                new AlertDialog.Builder(MyAdDetails.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new DeleteAd().execute();
+                            }
+                        })
+                        .show();
+            }
             Toast.makeText(MyAdDetails.this, "Your ad will be deleted soon. Thank You.", Toast.LENGTH_SHORT).show();
             finish();
         }

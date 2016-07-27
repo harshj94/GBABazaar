@@ -1,8 +1,11 @@
 package gbabazaar.gbabazaar;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -33,6 +36,8 @@ public class SignUp extends AppCompatActivity {
 
         Typeface custom_fonts = Typeface.createFromAsset(getAssets(), "fonts/ArgonPERSONAL-Regular.otf");
         holliday.setTypeface(custom_fonts);
+
+        new NetCheck().execute();
 
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,5 +101,44 @@ public class SignUp extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private class NetCheck extends AsyncTask<Void, Void, Void> {
+        Boolean result;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            csprogress = new ProgressDialog(SignUp.this);
+            csprogress.show();
+            csprogress.setCancelable(false);
+            csprogress.setMessage("Please wait...");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            csprogress.dismiss();
+            if (!result) {
+                new AlertDialog.Builder(SignUp.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new NetCheck().execute();
+                            }
+                        })
+                        .show();
+            }
+        }
     }
 }

@@ -1,7 +1,10 @@
 package gbabazaar.gbabazaar;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
@@ -30,16 +33,15 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
 
+        new NetCheck().execute();
+
         name = (EditText) findViewById(R.id.name);
         mobile = (EditText) findViewById(R.id.mobile);
         email = (EditText) findViewById(R.id.emailid);
         save = (TextView) findViewById(R.id.save);
         back = (ImageView) findViewById(R.id.back);
-
         mobile.setEnabled(false);
-
         parseUser = ParseUser.getCurrentUser();
-
         name_ = parseUser.getString("Name");
         mobile_ = parseUser.getUsername();
         try {
@@ -50,7 +52,6 @@ public class Profile extends AppCompatActivity {
         name.setText(name_);
         mobile.setText(mobile_);
         email.setText(email_);
-
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,13 +72,50 @@ public class Profile extends AppCompatActivity {
                 });
             }
         });
-
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+    }
 
+    private class NetCheck extends AsyncTask<Void, Void, Void> {
+        Boolean result;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            csprogress = new ProgressDialog(Profile.this);
+            csprogress.show();
+            csprogress.setCancelable(false);
+            csprogress.setMessage("Please wait...");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            csprogress.dismiss();
+            if (!result) {
+                new AlertDialog.Builder(Profile.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new NetCheck().execute();
+                            }
+                        })
+                        .show();
+            }
+        }
     }
 }

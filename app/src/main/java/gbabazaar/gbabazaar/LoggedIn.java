@@ -252,37 +252,49 @@ public class LoggedIn extends AppCompatActivity {
     }
 
     private class AdLoadEarly extends AsyncTask<Void, Void, Void> {
+
+        Boolean result;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            csprogress = new ProgressDialog(LoggedIn.this);
+            csprogress.show();
+            csprogress.setCancelable(false);
+            csprogress.setMessage("Please wait...");
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            items.clear();
-            List<ParseObject> objects = null;
-            parseQuery = ParseQuery.getQuery("Advertisement");
-            parseQuery.orderByDescending("createdAt");
-            parseQuery.fromLocalDatastore();
-            try {
-                objects = parseQuery.find();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            assert objects != null;
-            for (i = 0; i < objects.size(); i++) {
-                parseObject = objects.get(i);
-                item = new Item();
-                item.settTitle(parseObject.getString("Title"));
-                item.settCategory(parseObject.getString("Category"));
-                item.settObjectId(parseObject.getObjectId());
-                ParseFile parseFile = parseObject.getParseFile("image0");
+
+            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+            result = connectionDetector.isConnectingToInternet();
+            if (result) {
+                items.clear();
+                List<ParseObject> objects = null;
+                parseQuery = ParseQuery.getQuery("Advertisement");
+                parseQuery.orderByDescending("createdAt");
+                parseQuery.fromLocalDatastore();
                 try {
-                    item.settImageBitmap(parseFile.getData());
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
+                    objects = parseQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-                items.add(item);
+                assert objects != null;
+                for (i = 0; i < objects.size(); i++) {
+                    parseObject = objects.get(i);
+                    item = new Item();
+                    item.settTitle(parseObject.getString("Title"));
+                    item.settCategory(parseObject.getString("Category"));
+                    item.settObjectId(parseObject.getObjectId());
+                    ParseFile parseFile = parseObject.getParseFile("image0");
+                    try {
+                        item.settImageBitmap(parseFile.getData());
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                    items.add(item);
+                }
             }
             return null;
         }
@@ -290,6 +302,20 @@ public class LoggedIn extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            csprogress.dismiss();
+            if (!result) {
+                new AlertDialog.Builder(LoggedIn.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new AdLoadEarly().execute();
+                            }
+                        })
+                        .show();
+            }
             adapter.notifyDataSetChanged();
             Toast.makeText(LoggedIn.this, "Please wait... Ads are being loaded.", Toast.LENGTH_SHORT).show();
         }
