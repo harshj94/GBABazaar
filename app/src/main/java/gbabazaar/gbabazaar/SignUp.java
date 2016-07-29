@@ -2,7 +2,9 @@ package gbabazaar.gbabazaar;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -22,7 +24,7 @@ public class SignUp extends AppCompatActivity {
     TextView holliday;
     MyTextView signin;
     EditText name, emailid, phone, password, confirmpass;
-    TextView signup;
+    TextView signup,needhelp;
     ParseUser parseUser;
     ProgressDialog csprogress;
 
@@ -33,6 +35,7 @@ public class SignUp extends AppCompatActivity {
 
         signin = (MyTextView) findViewById(R.id.signin);
         holliday = (TextView) findViewById(R.id.holliday);
+        needhelp=(TextView)findViewById(R.id.needhelp);
 
         Typeface custom_fonts = Typeface.createFromAsset(getAssets(), "fonts/ArgonPERSONAL-Regular.otf");
         holliday.setTypeface(custom_fonts);
@@ -99,6 +102,32 @@ public class SignUp extends AppCompatActivity {
                         }
                     });
                 }
+            }
+        });
+
+        needhelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(SignUp.this)
+                        .setTitle("Contact Us")
+                        .setMessage("Email:\tgbabazaar@gmail.com\nMobile:\t+91 9960926981")
+                        .setNegativeButton("Call Us", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(Intent.ACTION_DIAL);
+                                intent.setData(Uri.parse("tel:+919960926981"));
+                                startActivity(intent);
+                            }
+                        })
+                        .setNeutralButton("Email Us", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "gbabazaar@gmail.com", null));
+                                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "");
+                                emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+                                startActivity(Intent.createChooser(emailIntent, "Send email..."));
+                            }
+                        })
+                        .show();
             }
         });
     }

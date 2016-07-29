@@ -59,7 +59,7 @@
                 android:background="#00000000"
                 android:drawablePadding="10dp"
                 android:singleLine="true"
-                android:hint="Username"
+                android:hint="Mobile Number"
                 android:paddingLeft="10dp"
                 android:textColor="#fff"
                 android:textColorHint="#fff"

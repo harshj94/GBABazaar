@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
@@ -28,6 +29,12 @@ import com.parse.ParseQuery;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+
+import rebus.permissionutils.AskagainCallback;
+import rebus.permissionutils.FullCallback;
+import rebus.permissionutils.PermissionEnum;
+import rebus.permissionutils.PermissionManager;
 
 public class MyAdDetails extends AppCompatActivity {
 
@@ -61,6 +68,27 @@ public class MyAdDetails extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        PermissionManager.with(MyAdDetails.this)
+                .permission(PermissionEnum.WRITE_EXTERNAL_STORAGE)
+                .askagain(true)
+                .askagainCallback(new AskagainCallback() {
+                    @Override
+                    public void showRequestPermission(UserResponse response) {
+                        showDialog(1);
+                    }
+                })
+                .callback(new FullCallback() {
+                    @Override
+                    public void result(ArrayList<PermissionEnum> permissionsGranted, ArrayList<PermissionEnum> permissionsDenied, ArrayList<PermissionEnum> permissionsDeniedForever, ArrayList<PermissionEnum> permissionsAsked) {
+                    }
+                })
+                .ask();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionManager.handleResult(requestCode, permissions, grantResults);
     }
 
     private class FetchAdDetails extends AsyncTask<Void, Void, Void> {

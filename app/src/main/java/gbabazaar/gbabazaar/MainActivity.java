@@ -34,9 +34,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        welcomeScreen = new WelcomeScreenHelper(this, MyWelcomeActivity.class);
-        welcomeScreen.show(savedInstanceState);
-
         new Login().execute();
 
         create = (MyTextView) findViewById(R.id.create);
@@ -90,36 +87,34 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 String user, pass;
-                user = username.getText().toString().trim();
-                pass = password.getText().toString().trim();
-                if (user.equals("") || pass.equals("")) {
-                    Toast.makeText(getApplicationContext(), "Username or password is empty", Toast.LENGTH_LONG).show();
-                } else {
-                    csprogress = new ProgressDialog(MainActivity.this);
-                    csprogress.show();
-                    csprogress.setCancelable(false);
-                    csprogress.setMessage("Please wait...");
-                    ParseUser.logInInBackground(user, pass, new LogInCallback() {
-                        public void done(ParseUser user, ParseException e) {
-                            csprogress.dismiss();
-                            if (user != null) {
-                                Intent it = new Intent(MainActivity.this, LoggedIn.class);
-                                startActivity(it);
-                                finish();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
+                Boolean result = connectionDetector.isConnectingToInternet();
+                if (result) {
+                    user = username.getText().toString().trim();
+                    pass = password.getText().toString().trim();
+                    if (user.equals("") || pass.equals("")) {
+                        Toast.makeText(getApplicationContext(), "Username or password is empty", Toast.LENGTH_LONG).show();
+                    } else {
+                        csprogress = new ProgressDialog(MainActivity.this);
+                        csprogress.show();
+                        csprogress.setCancelable(false);
+                        csprogress.setMessage("Please wait...");
+                        ParseUser.logInInBackground(user, pass, new LogInCallback() {
+                            public void done(ParseUser user, ParseException e) {
+                                csprogress.dismiss();
+                                if (user != null) {
+                                    Intent it = new Intent(MainActivity.this, MyAdsList.class);
+                                    startActivity(it);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         });
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        welcomeScreen.onSaveInstanceState(outState);
     }
 
     private class Login extends AsyncTask<Void, Void, Void> {
@@ -142,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             if (result) {
                 ParseUser parseUser = ParseUser.getCurrentUser();
                 if (parseUser != null) {
-                    Intent it = new Intent(MainActivity.this, LoggedIn.class);
+                    Intent it = new Intent(MainActivity.this, MyAdsList.class);
                     startActivity(it);
                     finish();
                 }
@@ -163,6 +158,12 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 new Login().execute();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
                             }
                         })
                         .show();

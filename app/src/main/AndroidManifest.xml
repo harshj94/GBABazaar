@@ -25,13 +25,7 @@
         <activity
             android:name=".MainActivity"
             android:label="GBA Bazaar"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SignUp"
             android:label="Sign Up"
@@ -69,6 +63,16 @@
         <activity
             android:name=".MyWelcomeActivity"
             android:theme="@style/WelcomeScreenTheme" />
+        <activity
+            android:name=".Home"
+            android:label="@string/title_activity_home"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

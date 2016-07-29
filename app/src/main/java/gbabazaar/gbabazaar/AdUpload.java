@@ -288,14 +288,15 @@ public class AdUpload extends AppCompatActivity {
                             }
                         })
                         .show();
-            }
-            if (s.equals("")) {
-                Toast.makeText(getApplicationContext(), "Your ad has been submitted for review.", Toast.LENGTH_LONG).show();
-                Intent it = new Intent(AdUpload.this, AdUpload.class);
-                startActivity(it);
-                finish();
             } else {
-                Toast.makeText(getApplicationContext(), "Error: " + s, Toast.LENGTH_LONG).show();
+                if (s.equals("")) {
+                    Toast.makeText(getApplicationContext(), "Your ad has been submitted for review.", Toast.LENGTH_LONG).show();
+                    Intent it = new Intent(AdUpload.this, AdUpload.class);
+                    startActivity(it);
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error: " + s, Toast.LENGTH_LONG).show();
+                }
             }
         }
     }

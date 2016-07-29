@@ -5,4 +5,5 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="pick_N_images">Pick/Capture only 3 images</string>
     <string name="title_activity_my_ads_list">MyAdsList</string>
+    <string name="title_activity_home">Home</string>
 </resources>

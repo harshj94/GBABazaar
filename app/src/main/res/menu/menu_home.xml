@@ -1,20 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="gbabazaar.gbabazaar.LoggedIn">
+    tools:context="gbabazaar.gbabazaar.Home">
     <item
-        android:id="@+id/action_profile"
+        android:id="@+id/action_myaccount"
         android:orderInCategory="1"
-        android:title="My Profile"
+        android:title="My Account"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_aboutus"
-        android:orderInCategory="2"
+        android:orderInCategory="5"
         android:title="About Us"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_logout"
-        android:orderInCategory="3"
-        android:title="Logout"
+        android:id="@+id/action_aboutDeveloper"
+        android:orderInCategory="6"
+        android:title="About Developer"
         app:showAsAction="never" />
 </menu>
