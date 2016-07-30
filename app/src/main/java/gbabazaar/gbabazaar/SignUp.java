@@ -24,7 +24,7 @@ public class SignUp extends AppCompatActivity {
     TextView holliday;
     MyTextView signin;
     EditText name, emailid, phone, password, confirmpass;
-    TextView signup,needhelp;
+    TextView signup, needhelp;
     ParseUser parseUser;
     ProgressDialog csprogress;
 
@@ -35,7 +35,7 @@ public class SignUp extends AppCompatActivity {
 
         signin = (MyTextView) findViewById(R.id.signin);
         holliday = (TextView) findViewById(R.id.holliday);
-        needhelp=(TextView)findViewById(R.id.needhelp);
+        needhelp = (TextView) findViewById(R.id.needhelp);
 
         Typeface custom_fonts = Typeface.createFromAsset(getAssets(), "fonts/ArgonPERSONAL-Regular.otf");
         holliday.setTypeface(custom_fonts);

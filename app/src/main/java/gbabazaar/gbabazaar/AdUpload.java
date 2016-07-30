@@ -62,8 +62,11 @@ public class AdUpload extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ad_upload);
 
-        s = "";
+        if(ParseUser.getCurrentUser()==null)
+        {
 
+        }
+        s = "";
         spinner = (MaterialSpinner) findViewById(R.id.spinner);
         adupload = (TextView) findViewById(R.id.hello);
         linearLayout = (LinearLayout) findViewById(R.id.place);
@@ -79,7 +82,7 @@ public class AdUpload extends AppCompatActivity {
         tool_save = (TextView) findViewById(R.id.save);
         back = (ImageView) findViewById(R.id.back);
 
-        spinner.setItems("Agriculture Equipments", "Fruits", "Vegetables", "Auto", "Home/Flat", "Hotels");
+        spinner.setItems("Agriculture", "Fruits", "Vegetables", "Automobiles", "Home/Flat", "Hotels");
 
         name.setText(ParseUser.getCurrentUser().getString("Name"));
         mobile.setEnabled(false);
@@ -106,7 +109,7 @@ public class AdUpload extends AppCompatActivity {
             }
         });
 
-        category = "Agriculture Equipments";
+        category = "Agriculture";
 
         spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
 
@@ -115,8 +118,6 @@ public class AdUpload extends AppCompatActivity {
                 category = item;
             }
         });
-
-        parseObject = new ParseObject("Advertisement");
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +132,6 @@ public class AdUpload extends AppCompatActivity {
                     Toast.makeText(AdUpload.this, "Some of the required field is empty.", Toast.LENGTH_SHORT).show();
 
                 } else {
-
                     object_id = ParseUser.getCurrentUser().getObjectId();
                     name_ = name.getText().toString().trim();
                     mobile_ = mobile.getText().toString().trim();
@@ -235,6 +235,11 @@ public class AdUpload extends AppCompatActivity {
             ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
             result = connectionDetector.isConnectingToInternet();
             if (result) {
+
+                if (category.equals("Home/Flat")) {
+                    category = "Home";
+                }
+                parseObject = new ParseObject(category);
 
                 file = new ParseFile[path.size()];
 

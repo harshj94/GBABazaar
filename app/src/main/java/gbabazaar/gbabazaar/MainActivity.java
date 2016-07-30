@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
     TextView login;
     MyTextView create;
     ProgressDialog csprogress;
-    WelcomeScreenHelper welcomeScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

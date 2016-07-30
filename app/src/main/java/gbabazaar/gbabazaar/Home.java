@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +18,7 @@ import com.stephentuso.welcome.WelcomeScreenHelper;
 public class Home extends AppCompatActivity {
 
     WelcomeScreenHelper welcomeScreen;
+    CardView agriculture, fruits, vegetables, home, automobiles, hotels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +34,56 @@ public class Home extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                startActivity(new Intent(Home.this, AdUpload.class));
+            }
+        });
+
+        agriculture = (CardView) findViewById(R.id.agriculture);
+        fruits = (CardView) findViewById(R.id.fruits);
+        vegetables = (CardView) findViewById(R.id.vegetables);
+        home = (CardView) findViewById(R.id.home);
+        automobiles = (CardView) findViewById(R.id.automobiles);
+        hotels = (CardView) findViewById(R.id.hotel);
+
+        agriculture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewIntent("Agriculture");
+            }
+        });
+
+        fruits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewIntent("Fruits");
+            }
+        });
+
+        vegetables.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewIntent("Vegetables");
+            }
+        });
+
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewIntent("Home");
+            }
+        });
+
+        automobiles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewIntent("Automobiles");
+            }
+        });
+
+        hotels.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewIntent("Hotels");
             }
         });
     }
@@ -109,4 +158,9 @@ public class Home extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    void openNewIntent(String category) {
+        Intent it = new Intent(Home.this, LoggedIn.class);
+        it.putExtra("category", category);
+        startActivity(it);
+    }
 }

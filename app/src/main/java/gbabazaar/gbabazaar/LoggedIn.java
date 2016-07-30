@@ -4,11 +4,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,12 +17,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +37,7 @@ public class LoggedIn extends AppCompatActivity {
     ArrayList<Item> items;
     ListView listView;
     Item item;
+    String cat;
     private ItemsAdapter adapter;
 
     @Override
@@ -49,6 +46,10 @@ public class LoggedIn extends AppCompatActivity {
         setContentView(R.layout.activity_logged_in);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        cat = getIntent().getStringExtra("category");
 
         items = new ArrayList<>();
         listView = (ListView) findViewById(R.id.list);
@@ -80,10 +81,25 @@ public class LoggedIn extends AppCompatActivity {
                 Intent it = new Intent(getApplicationContext(), AdDetails.class);
                 Item i1 = items.get(i);
                 it.putExtra("objectId", i1.gettObjectId());
+                it.putExtra("category", cat);
                 startActivity(it);
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class AdLoad extends AsyncTask<Void, Void, Void> {
@@ -95,7 +111,7 @@ public class LoggedIn extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             sharedPreferences = getApplicationContext().getSharedPreferences("MyPreferences", MODE_PRIVATE);
-            score = sharedPreferences.getInt("score", 0);
+            score = sharedPreferences.getInt(cat, 0);
             ParseObject objectt = null;
             parseQuery = ParseQuery.getQuery("GameScore");
             try {
@@ -104,14 +120,14 @@ public class LoggedIn extends AppCompatActivity {
                 e.printStackTrace();
             }
             assert objectt != null;
-            if (score != objectt.getInt("score")) {
-                score = objectt.getInt("score");
+            if (score != objectt.getInt(cat)) {
+                score = objectt.getInt(cat);
                 final SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putInt("score", score);
                 editor.apply();
                 items.clear();
                 List<ParseObject> objects = null;
-                parseQuery = ParseQuery.getQuery("Advertisement");
+                parseQuery = ParseQuery.getQuery(cat);
                 parseQuery.orderByDescending("createdAt");
                 parseQuery.setLimit(1000);
                 try {
@@ -121,8 +137,8 @@ public class LoggedIn extends AppCompatActivity {
                 }
                 assert objects != null;
                 try {
-                    ParseObject.unpinAll("Advertisements");
-                    ParseObject.pinAll("Advertisements", objects);
+                    ParseObject.unpinAll(cat);
+                    ParseObject.pinAll(cat, objects);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -172,7 +188,7 @@ public class LoggedIn extends AppCompatActivity {
             if (result) {
                 items.clear();
                 List<ParseObject> objects = null;
-                parseQuery = ParseQuery.getQuery("Advertisement");
+                parseQuery = ParseQuery.getQuery(cat);
                 parseQuery.orderByDescending("createdAt");
                 parseQuery.fromLocalDatastore();
                 try {
