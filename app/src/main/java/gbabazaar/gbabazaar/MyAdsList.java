@@ -38,7 +38,7 @@ public class MyAdsList extends AppCompatActivity {
     ListView listView;
     Item item;
     ProgressDialog csprogress;
-    private ItemsAdapter adapter;
+    Boolean result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +59,9 @@ public class MyAdsList extends AppCompatActivity {
                 });
             }
         };
-        Toast.makeText(MyAdsList.this, "Your ads will be displayed here soon.", Toast.LENGTH_SHORT).show();
         timer.schedule(doAsynchronousTask, 0, 60000);
+
+        Toast.makeText(MyAdsList.this, "Your ads will be displayed here soon.", Toast.LENGTH_SHORT).show();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -136,20 +137,11 @@ public class MyAdsList extends AppCompatActivity {
     }
 
     private class AdLoad extends AsyncTask<Void, Void, Void> {
-        Boolean result;
-
-        @Override
-        protected void onPreExecute() {
-//            csprogress = new ProgressDialog(MyAdsList.this);
-//            csprogress.setCancelable(false);
-//            csprogress.setMessage("Please wait...");
-//            csprogress.show();
-        }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
-            result = connectionDetector.isConnectingToInternet();
+
+            result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
             if (result) {
                 items = new ArrayList<>();
                 items.clear();
@@ -184,8 +176,11 @@ public class MyAdsList extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            if (!result) {
+                Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_LONG).show();
+            }
             listView = (ListView) findViewById(R.id.list);
-            adapter = new ItemsAdapter(getApplicationContext(), items);
+            ItemsAdapter adapter = new ItemsAdapter(getApplicationContext(), items);
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -197,24 +192,6 @@ public class MyAdsList extends AppCompatActivity {
                 }
             });
             adapter.notifyDataSetChanged();
-            //csprogress.dismiss();
-            if (!result) {
-                new AlertDialog.Builder(MyAdsList.this)
-                        .setTitle("Internet Connection Error")
-                        .setMessage("It seems as if you are not connected to internet")
-                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                new AdLoad().execute();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            }
-                        })
-                        .show();
-            }
         }
     }
 }

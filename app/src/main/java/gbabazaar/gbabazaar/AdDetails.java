@@ -146,66 +146,68 @@ public class AdDetails extends AppCompatActivity {
                             }
                         })
                         .show();
-            }
-            title = (TextView) findViewById(R.id.title);
-            category = (TextView) findViewById(R.id.category);
-            rate = (TextView) findViewById(R.id.rate);
-            description = (TextView) findViewById(R.id.description);
-            name = (TextView) findViewById(R.id.name);
-            city = (TextView) findViewById(R.id.city);
-            call = (TextView) findViewById(R.id.call);
-            title.setText(parseObject.getString("Title"));
-            category.setText(parseObject.getString("Category"));
-            rate.setText(parseObject.getString("Rate"));
-            description.setText(parseObject.getString("Description"));
-            name.setText(parseObject.getString("Name"));
-            city.setText(parseObject.getString("City"));
-            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-            lp.gravity = Gravity.NO_GRAVITY;
-            linearLayout.setLayoutParams(lp);
-            linearLayout.removeAllViews();
-            for (i = 0; i < images; i++) {
-                final ImageView imageView = new ImageView(AdDetails.this);
-                Bitmap bmp = BitmapFactory.decodeByteArray(bytes[i], 0, bytes[i].length);
-                bmp = Bitmap.createScaledBitmap(bmp, 250, 400, false);
-                imageView.setPadding(4, 2, 4, 2);
-                imageView.setImageBitmap(bmp);
-                imageView.setId(i);
-                linearLayout.addView(imageView);
-                imageView.setOnClickListener(new View.OnClickListener() {
+            } else {
+                title = (TextView) findViewById(R.id.title);
+                category = (TextView) findViewById(R.id.category);
+                rate = (TextView) findViewById(R.id.rate);
+                description = (TextView) findViewById(R.id.description);
+                name = (TextView) findViewById(R.id.name);
+                city = (TextView) findViewById(R.id.city);
+                call = (TextView) findViewById(R.id.call);
+                title.setText(parseObject.getString("Title"));
+                category.setText(parseObject.getString("Category"));
+                rate.setText(parseObject.getString("Rate"));
+                description.setText(parseObject.getString("Description"));
+                name.setText(parseObject.getString("Name"));
+                city.setText(parseObject.getString("City"));
+                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                lp.gravity = Gravity.NO_GRAVITY;
+                linearLayout.setLayoutParams(lp);
+                linearLayout.removeAllViews();
+                for (i = 0; i < images; i++) {
+                    final ImageView imageView = new ImageView(AdDetails.this);
+                    Bitmap bmp = BitmapFactory.decodeByteArray(bytes[i], 0, bytes[i].length);
+                    bmp = Bitmap.createScaledBitmap(bmp, 250, 400, false);
+                    imageView.setPadding(4, 2, 4, 2);
+                    imageView.setImageBitmap(bmp);
+                    imageView.setId(i);
+                    linearLayout.addView(imageView);
+                    imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Time now = new Time();
+                            now.setToNow();
+                            String s = now.toString();
+                            s = s.substring(0, Math.min(s.length(), 15));
+                            File f = new File(Environment.getExternalStorageDirectory() + File.separator + s);
+                            try {
+                                f.createNewFile();
+                                FileOutputStream fo = new FileOutputStream(f);
+                                fo.write(bytes[imageView.getId()]);
+                                fo.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Uri path = Uri.fromFile(f);
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_VIEW);
+                            intent.setDataAndType(path, "image/*");
+                            startActivity(intent);
+                        }
+                    });
+                }
+
+                call.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Time now = new Time();
-                        now.setToNow();
-                        String s = now.toString();
-                        s = s.substring(0, Math.min(s.length(), 15));
-                        File f = new File(Environment.getExternalStorageDirectory() + File.separator + s);
-                        try {
-                            f.createNewFile();
-                            FileOutputStream fo = new FileOutputStream(f);
-                            fo.write(bytes[imageView.getId()]);
-                            fo.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Uri path = Uri.fromFile(f);
-                        Intent intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.setDataAndType(path, "image/*");
+                        Intent intent = new Intent(Intent.ACTION_DIAL);
+                        intent.setData(Uri.parse("tel:" + parseObject.getString("Mobile")));
                         startActivity(intent);
                     }
                 });
             }
-
-            call.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_DIAL);
-                    intent.setData(Uri.parse("tel:" + parseObject.getString("Mobile")));
-                    startActivity(intent);
-                }
-            });
-
         }
     }
+
+
 }

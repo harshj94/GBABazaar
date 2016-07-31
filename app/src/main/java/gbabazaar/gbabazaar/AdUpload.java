@@ -61,105 +61,107 @@ public class AdUpload extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ad_upload);
+        if (ParseUser.getCurrentUser() == null) {
+            Intent it = new Intent(getApplicationContext(), MainActivity.class);
+            it.putExtra("from", "AdUpload");
+            startActivity(it);
+            finish();
+        } else {
+            s = "";
+            spinner = (MaterialSpinner) findViewById(R.id.spinner);
+            adupload = (TextView) findViewById(R.id.hello);
+            linearLayout = (LinearLayout) findViewById(R.id.place);
+            myImage = (ImageView) findViewById(R.id.placeholder);
+            name = (EditText) findViewById(R.id.name);
+            mobile = (EditText) findViewById(R.id.mobile);
+            city = (EditText) findViewById(R.id.city);
+            title = (EditText) findViewById(R.id.title);
+            description = (EditText) findViewById(R.id.description);
+            rate = (EditText) findViewById(R.id.rate);
+            submit = (TextView) findViewById(R.id.submit);
+            tool_edit = (TextView) findViewById(R.id.edit);
+            tool_save = (TextView) findViewById(R.id.save);
+            back = (ImageView) findViewById(R.id.back);
 
-        if(ParseUser.getCurrentUser()==null)
-        {
+            spinner.setItems("Agriculture", "Fruits", "Vegetables", "Automobiles", "Home/Flat", "Hotels");
 
-        }
-        s = "";
-        spinner = (MaterialSpinner) findViewById(R.id.spinner);
-        adupload = (TextView) findViewById(R.id.hello);
-        linearLayout = (LinearLayout) findViewById(R.id.place);
-        myImage = (ImageView) findViewById(R.id.placeholder);
-        name = (EditText) findViewById(R.id.name);
-        mobile = (EditText) findViewById(R.id.mobile);
-        city = (EditText) findViewById(R.id.city);
-        title = (EditText) findViewById(R.id.title);
-        description = (EditText) findViewById(R.id.description);
-        rate = (EditText) findViewById(R.id.rate);
-        submit = (TextView) findViewById(R.id.submit);
-        tool_edit = (TextView) findViewById(R.id.edit);
-        tool_save = (TextView) findViewById(R.id.save);
-        back = (ImageView) findViewById(R.id.back);
+            name.setText(ParseUser.getCurrentUser().getString("Name"));
+            mobile.setEnabled(false);
+            mobile.setText(ParseUser.getCurrentUser().getUsername());
 
-        spinner.setItems("Agriculture", "Fruits", "Vegetables", "Automobiles", "Home/Flat", "Hotels");
-
-        name.setText(ParseUser.getCurrentUser().getString("Name"));
-        mobile.setEnabled(false);
-        mobile.setText(ParseUser.getCurrentUser().getUsername());
-
-        tool_save.setText("");
-        tool_edit.setText("Upload Ad");
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
-
-        adupload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MultiImageSelector.create(getApplicationContext())
-                        .showCamera(true) // show camera or not. true by default
-                        .count(3) // max select image size, 9 by default. used width #.multi()
-                        .multi() // multi mode, default mode;
-                        .origin(al)
-                        .start(AdUpload.this, 1);
-            }
-        });
-
-        category = "Agriculture";
-
-        spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
-
-            @Override
-            public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-                category = item;
-            }
-        });
-
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (al == null) {
-
-                    Toast.makeText(AdUpload.this, "Upload images!!!", Toast.LENGTH_SHORT).show();
-
-                } else if (name.getText().toString().trim().equals("") || city.getText().toString().trim().equals("") || description.getText().toString().trim().equals("") || rate.getText().toString().trim().equals("")) {
-
-                    Toast.makeText(AdUpload.this, "Some of the required field is empty.", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    object_id = ParseUser.getCurrentUser().getObjectId();
-                    name_ = name.getText().toString().trim();
-                    mobile_ = mobile.getText().toString().trim();
-                    city_ = city.getText().toString().trim();
-                    title_ = title.getText().toString().trim();
-                    description_ = description.getText().toString().trim();
-                    rate_ = rate.getText().toString().trim();
-
-                    new NetCheck().execute();
+            tool_save.setText("");
+            tool_edit.setText("Upload Ad");
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
                 }
-            }
-        });
+            });
 
-        PermissionManager.with(AdUpload.this)
-                .permission(PermissionEnum.WRITE_EXTERNAL_STORAGE, PermissionEnum.CAMERA)
-                .askagain(true)
-                .askagainCallback(new AskagainCallback() {
-                    @Override
-                    public void showRequestPermission(UserResponse response) {
-                        showDialog(1);
+            adupload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MultiImageSelector.create(getApplicationContext())
+                            .showCamera(true) // show camera or not. true by default
+                            .count(3) // max select image size, 9 by default. used width #.multi()
+                            .multi() // multi mode, default mode;
+                            .origin(al)
+                            .start(AdUpload.this, 1);
+                }
+            });
+
+            category = "Agriculture";
+
+            spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<String>() {
+
+                @Override
+                public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
+                    category = item;
+                }
+            });
+
+            submit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (al == null) {
+
+                        Toast.makeText(AdUpload.this, "Upload images!!!", Toast.LENGTH_SHORT).show();
+
+                    } else if (name.getText().toString().trim().equals("") || city.getText().toString().trim().equals("") || description.getText().toString().trim().equals("") || rate.getText().toString().trim().equals("")) {
+
+                        Toast.makeText(AdUpload.this, "Some of the required field is empty.", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        object_id = ParseUser.getCurrentUser().getObjectId();
+                        name_ = name.getText().toString().trim();
+                        mobile_ = mobile.getText().toString().trim();
+                        city_ = city.getText().toString().trim();
+                        title_ = title.getText().toString().trim();
+                        description_ = description.getText().toString().trim();
+                        rate_ = rate.getText().toString().trim();
+
+                        new NetCheck().execute();
                     }
-                })
-                .callback(new FullCallback() {
-                    @Override
-                    public void result(ArrayList<PermissionEnum> permissionsGranted, ArrayList<PermissionEnum> permissionsDenied, ArrayList<PermissionEnum> permissionsDeniedForever, ArrayList<PermissionEnum> permissionsAsked) {
-                    }
-                })
-                .ask();
+                }
+            });
+
+            PermissionManager.with(AdUpload.this)
+                    .permission(PermissionEnum.WRITE_EXTERNAL_STORAGE, PermissionEnum.CAMERA)
+                    .askagain(true)
+                    .askagainCallback(new AskagainCallback() {
+                        @Override
+                        public void showRequestPermission(UserResponse response) {
+                            showDialog(1);
+                        }
+                    })
+                    .callback(new FullCallback() {
+                        @Override
+                        public void result(ArrayList<PermissionEnum> permissionsGranted, ArrayList<PermissionEnum> permissionsDenied, ArrayList<PermissionEnum> permissionsDeniedForever, ArrayList<PermissionEnum> permissionsAsked) {
+                        }
+                    })
+                    .ask();
+        }
     }
 
     @Override

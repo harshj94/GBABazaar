@@ -55,21 +55,28 @@ public class Profile extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                parseUser.put("Name", name.getText().toString().trim());
-                parseUser.setEmail(email.getText().toString().trim());
-                csprogress = new ProgressDialog(Profile.this);
-                csprogress.show();
-                csprogress.setCancelable(false);
-                csprogress.setMessage("Please wait...");
-                parseUser.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        csprogress.dismiss();
-                        if (e != null) {
-                            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                Boolean r=new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+                if(r) {
+                    parseUser.put("Name", name.getText().toString().trim());
+                    parseUser.setEmail(email.getText().toString().trim());
+                    csprogress = new ProgressDialog(Profile.this);
+                    csprogress.show();
+                    csprogress.setCancelable(false);
+                    csprogress.setMessage("Please wait...");
+                    parseUser.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            csprogress.dismiss();
+                            if (e != null) {
+                                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else
+                {
+                    Toast.makeText(Profile.this, "It seems as if you are not connected to internet.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         back.setOnClickListener(new View.OnClickListener() {

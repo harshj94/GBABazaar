@@ -3,7 +3,9 @@ package gbabazaar.gbabazaar;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,20 +17,44 @@ import android.view.View;
 
 import com.stephentuso.welcome.WelcomeScreenHelper;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class Home extends AppCompatActivity {
 
+    public static AlertDialog alertDialog;
     WelcomeScreenHelper welcomeScreen;
     CardView agriculture, fruits, vegetables, home, automobiles, hotels;
+    Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        alertDialog = null;
         setContentView(R.layout.activity_home);
+        alertDialog = null;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         welcomeScreen = new WelcomeScreenHelper(this, MyWelcomeActivity.class);
         welcomeScreen.show(savedInstanceState);
+
+        final Handler handler = new Handler();
+        timer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            new NetCheck().execute();
+                        } catch (Exception ignored) {
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, 1000);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +132,7 @@ public class Home extends AppCompatActivity {
 
         if (id == R.id.action_myaccount) {
             Intent it = new Intent(Home.this, MainActivity.class);
+            it.putExtra("from", "Home");
             startActivity(it);
             return true;
         }
@@ -162,5 +189,32 @@ public class Home extends AppCompatActivity {
         Intent it = new Intent(Home.this, LoggedIn.class);
         it.putExtra("category", category);
         startActivity(it);
+    }
+
+    private class NetCheck extends AsyncTask<Void, Void, Void> {
+        Boolean result;
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            result = new ConnectionDetector(Home.this).isConnectingToInternet();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (!result) {
+                if (alertDialog == null) {
+                    alertDialog = new AlertDialog.Builder(Home.this)
+                            .setTitle("Internet Connection Error")
+                            .setCancelable(false)
+                            .setMessage("It seems as if you are not connected to internet.")
+                            .show();
+                }
+            } else {
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                }
+            }
+        }
     }
 }

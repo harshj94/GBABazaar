@@ -1,13 +1,10 @@
 package gbabazaar.gbabazaar;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -29,7 +26,6 @@ import java.util.TimerTask;
 
 public class LoggedIn extends AppCompatActivity {
 
-    ProgressDialog csprogress;
     SharedPreferences sharedPreferences;
     ParseQuery<ParseObject> parseQuery;
     int i, score;
@@ -38,6 +34,7 @@ public class LoggedIn extends AppCompatActivity {
     ListView listView;
     Item item;
     String cat;
+    Timer timer;
     private ItemsAdapter adapter;
 
     @Override
@@ -59,14 +56,19 @@ public class LoggedIn extends AppCompatActivity {
         new AdLoadEarly().execute();
 
         final Handler handler = new Handler();
-        Timer timer = new Timer();
+        timer = new Timer();
         TimerTask doAsynchronousTask = new TimerTask() {
             @Override
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            new AdLoad().execute();
+                            Boolean result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+                            if (result) {
+                                new AdLoad().execute();
+                            } else {
+                                Toast.makeText(LoggedIn.this, "It seems as if you are not connected to internet.", Toast.LENGTH_SHORT).show();
+                            }
                         } catch (Exception ignored) {
                         }
                     }
@@ -86,6 +88,12 @@ public class LoggedIn extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
     }
 
     @Override
@@ -123,7 +131,7 @@ public class LoggedIn extends AppCompatActivity {
             if (score != objectt.getInt(cat)) {
                 score = objectt.getInt(cat);
                 final SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("score", score);
+                editor.putInt(cat, score);
                 editor.apply();
                 items.clear();
                 List<ParseObject> objects = null;
@@ -174,43 +182,35 @@ public class LoggedIn extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            csprogress = new ProgressDialog(LoggedIn.this);
-            csprogress.show();
-            csprogress.setCancelable(false);
-            csprogress.setMessage("Please wait...");
+            Toast.makeText(LoggedIn.this, "Loading Ads... Please wait", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-
-            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
-            result = connectionDetector.isConnectingToInternet();
-            if (result) {
-                items.clear();
-                List<ParseObject> objects = null;
-                parseQuery = ParseQuery.getQuery(cat);
-                parseQuery.orderByDescending("createdAt");
-                parseQuery.fromLocalDatastore();
+            items.clear();
+            List<ParseObject> objects = null;
+            parseQuery = ParseQuery.getQuery(cat);
+            parseQuery.orderByDescending("createdAt");
+            parseQuery.fromLocalDatastore();
+            try {
+                objects = parseQuery.find();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            assert objects != null;
+            for (i = 0; i < objects.size(); i++) {
+                parseObject = objects.get(i);
+                item = new Item();
+                item.settTitle(parseObject.getString("Title"));
+                item.settCategory(parseObject.getString("Category"));
+                item.settObjectId(parseObject.getObjectId());
+                ParseFile parseFile = parseObject.getParseFile("image0");
                 try {
-                    objects = parseQuery.find();
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    item.settImageBitmap(parseFile.getData());
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
                 }
-                assert objects != null;
-                for (i = 0; i < objects.size(); i++) {
-                    parseObject = objects.get(i);
-                    item = new Item();
-                    item.settTitle(parseObject.getString("Title"));
-                    item.settCategory(parseObject.getString("Category"));
-                    item.settObjectId(parseObject.getObjectId());
-                    ParseFile parseFile = parseObject.getParseFile("image0");
-                    try {
-                        item.settImageBitmap(parseFile.getData());
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
-                    items.add(item);
-                }
+                items.add(item);
             }
             return null;
         }
@@ -218,22 +218,7 @@ public class LoggedIn extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            csprogress.dismiss();
-            if (!result) {
-                new AlertDialog.Builder(LoggedIn.this)
-                        .setTitle("Internet Connection Error")
-                        .setCancelable(false)
-                        .setMessage("It seems as if you are not connected to internet")
-                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                new AdLoadEarly().execute();
-                            }
-                        })
-                        .show();
-            }
             adapter.notifyDataSetChanged();
-            Toast.makeText(LoggedIn.this, "Please wait... Ads are being loaded.", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -47,6 +47,7 @@ public class MyAdDetails extends AppCompatActivity {
     ProgressDialog csprogress;
     int images, i;
     ImageView imageView;
+    Boolean result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MyAdDetails extends AppCompatActivity {
         save = (TextView) findViewById(R.id.save);
         edit.setText("Ad View");
         save.setText("");
-        new FetchAdDetails().execute();
+        new NetCheck().execute();
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,7 +156,6 @@ public class MyAdDetails extends AppCompatActivity {
             description = (TextView) findViewById(R.id.description);
             name = (TextView) findViewById(R.id.name);
             city = (TextView) findViewById(R.id.city);
-
 
             title.setText(parseObject.getString("Title"));
             category.setText(parseObject.getString("Category"));
@@ -272,6 +272,33 @@ public class MyAdDetails extends AppCompatActivity {
             }
             Toast.makeText(MyAdDetails.this, "Your ad will be deleted soon. Thank You.", Toast.LENGTH_SHORT).show();
             finish();
+        }
+    }
+
+    private class NetCheck extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            result = new ConnectionDetector(MyAdDetails.this).isConnectingToInternet();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (result) {
+                new FetchAdDetails().execute();
+            } else {
+                new AlertDialog.Builder(MyAdDetails.this)
+                        .setTitle("Internet Connection Error")
+                        .setCancelable(false)
+                        .setMessage("It seems as if you are not connected to internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                new NetCheck().execute();
+                            }
+                        })
+                        .show();
+            }
         }
     }
 }

@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.stephentuso.welcome.WelcomeScreenHelper;
 
 import custom_font.MyTextView;
 
@@ -27,13 +26,14 @@ public class MainActivity extends AppCompatActivity {
     TextView login;
     MyTextView create;
     ProgressDialog csprogress;
+    Boolean result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new Login().execute();
+        new NetCheck().execute();
 
         create = (MyTextView) findViewById(R.id.create);
         holliday = (TextView) findViewById(R.id.holliday);
@@ -84,33 +84,34 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String user, pass;
-                ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
-                Boolean result = connectionDetector.isConnectingToInternet();
-                if (result) {
-                    user = username.getText().toString().trim();
-                    pass = password.getText().toString().trim();
-                    if (user.equals("") || pass.equals("")) {
-                        Toast.makeText(getApplicationContext(), "Username or password is empty", Toast.LENGTH_LONG).show();
-                    } else {
-                        csprogress = new ProgressDialog(MainActivity.this);
-                        csprogress.show();
-                        csprogress.setCancelable(false);
-                        csprogress.setMessage("Please wait...");
-                        ParseUser.logInInBackground(user, pass, new LogInCallback() {
-                            public void done(ParseUser user, ParseException e) {
-                                csprogress.dismiss();
-                                if (user != null) {
-                                    Intent it = new Intent(MainActivity.this, MyAdsList.class);
-                                    startActivity(it);
-                                    finish();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                user = username.getText().toString().trim();
+                pass = password.getText().toString().trim();
+                if (user.equals("") || pass.equals("")) {
+                    Toast.makeText(getApplicationContext(), "Username or password is empty", Toast.LENGTH_LONG).show();
+                } else {
+                    csprogress = new ProgressDialog(MainActivity.this);
+                    csprogress.show();
+                    csprogress.setCancelable(false);
+                    csprogress.setMessage("Please wait...");
+                    ParseUser.logInInBackground(user, pass, new LogInCallback() {
+                        public void done(ParseUser user, ParseException e) {
+                            csprogress.dismiss();
+                            if (user != null) {
+                                Intent it = null;
+                                String s = getIntent().getStringExtra("from");
+                                if (s.equals("Home")) {
+                                    it = new Intent(MainActivity.this, MyAdsList.class);
+                                } else if (s.equals("AdUpload")) {
+                                    it = new Intent(MainActivity.this, AdUpload.class);
                                 }
+                                startActivity(it);
+                                finish();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             }
         });
@@ -118,37 +119,35 @@ public class MainActivity extends AppCompatActivity {
 
     private class Login extends AsyncTask<Void, Void, Void> {
 
-        Boolean result;
-
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            csprogress = new ProgressDialog(MainActivity.this);
-            csprogress.show();
-            csprogress.setCancelable(false);
-            csprogress.setMessage("Please wait...");
+        protected Void doInBackground(Void... voids) {
+            ParseUser parseUser = ParseUser.getCurrentUser();
+            if (parseUser != null) {
+                Intent it = new Intent(MainActivity.this, MyAdsList.class);
+                startActivity(it);
+                finish();
+            }
+            return null;
         }
+    }
+
+    private class NetCheck extends AsyncTask<Void,Void,Void>
+    {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
-            result = connectionDetector.isConnectingToInternet();
-            if (result) {
-                ParseUser parseUser = ParseUser.getCurrentUser();
-                if (parseUser != null) {
-                    Intent it = new Intent(MainActivity.this, MyAdsList.class);
-                    startActivity(it);
-                    finish();
-                }
-            }
+            result=new ConnectionDetector(MainActivity.this).isConnectingToInternet();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            csprogress.dismiss();
-            if (!result) {
+            if(result)
+            {
+                new Login().execute();
+            }
+            else
+            {
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Internet Connection Error")
                         .setCancelable(false)
@@ -156,13 +155,7 @@ public class MainActivity extends AppCompatActivity {
                         .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                new Login().execute();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
+                                new NetCheck().execute();
                             }
                         })
                         .show();
