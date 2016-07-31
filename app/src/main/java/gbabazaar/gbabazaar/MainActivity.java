@@ -90,28 +90,35 @@ public class MainActivity extends AppCompatActivity {
                 if (user.equals("") || pass.equals("")) {
                     Toast.makeText(getApplicationContext(), "Username or password is empty", Toast.LENGTH_LONG).show();
                 } else {
-                    csprogress = new ProgressDialog(MainActivity.this);
-                    csprogress.show();
-                    csprogress.setCancelable(false);
-                    csprogress.setMessage("Please wait...");
-                    ParseUser.logInInBackground(user, pass, new LogInCallback() {
-                        public void done(ParseUser user, ParseException e) {
-                            csprogress.dismiss();
-                            if (user != null) {
-                                Intent it = null;
-                                String s = getIntent().getStringExtra("from");
-                                if (s.equals("Home")) {
-                                    it = new Intent(MainActivity.this, MyAdsList.class);
-                                } else if (s.equals("AdUpload")) {
-                                    it = new Intent(MainActivity.this, AdUpload.class);
+                    Boolean result=new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+                    if(result) {
+                        csprogress = new ProgressDialog(MainActivity.this);
+                        csprogress.show();
+                        csprogress.setCancelable(false);
+                        csprogress.setMessage("Please wait...");
+                        ParseUser.logInInBackground(user, pass, new LogInCallback() {
+                            public void done(ParseUser user, ParseException e) {
+                                csprogress.dismiss();
+                                if (user != null) {
+                                    Intent it = null;
+                                    String s = getIntent().getStringExtra("from");
+                                    if (s.equals("Home")) {
+                                        it = new Intent(MainActivity.this, MyAdsList.class);
+                                    } else if (s.equals("AdUpload")) {
+                                        it = new Intent(MainActivity.this, AdUpload.class);
+                                    }
+                                    startActivity(it);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 }
-                                startActivity(it);
-                                finish();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                             }
-                        }
-                    });
+                        });
+                    }
+                    else
+                    {
+                        Toast.makeText(MainActivity.this, "It seems as if you are not connected to internet.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
