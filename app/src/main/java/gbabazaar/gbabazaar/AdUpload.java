@@ -83,7 +83,7 @@ public class AdUpload extends AppCompatActivity {
             tool_save = (TextView) findViewById(R.id.save);
             back = (ImageView) findViewById(R.id.back);
 
-            spinner.setItems("Agriculture", "Fruits", "Vegetables", "Automobiles", "Home/Flat", "Hotels");
+            spinner.setItems("Agriculture", "Fruits", "Vegetables", "Automobiles", "Home/Flat", "Hotels", "Others");
 
             name.setText(ParseUser.getCurrentUser().getString("Name"));
             mobile.setEnabled(false);

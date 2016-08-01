@@ -177,8 +177,6 @@ public class LoggedIn extends AppCompatActivity {
 
     private class AdLoadEarly extends AsyncTask<Void, Void, Void> {
 
-        Boolean result;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

@@ -24,7 +24,7 @@ public class Home extends AppCompatActivity {
 
     public static AlertDialog alertDialog;
     WelcomeScreenHelper welcomeScreen;
-    CardView agriculture, fruits, vegetables, home, automobiles, hotels;
+    CardView agriculture, fruits, vegetables, home, automobiles, hotels, others;
     Timer timer;
 
     @Override
@@ -70,6 +70,7 @@ public class Home extends AppCompatActivity {
         home = (CardView) findViewById(R.id.home);
         automobiles = (CardView) findViewById(R.id.automobiles);
         hotels = (CardView) findViewById(R.id.hotel);
+        others = (CardView) findViewById(R.id.others);
 
         agriculture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +113,14 @@ public class Home extends AppCompatActivity {
                 openNewIntent("Hotels");
             }
         });
+
+        others.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openNewIntent("Others");
+            }
+        });
+
     }
 
     @Override
