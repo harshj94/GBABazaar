@@ -39,11 +39,16 @@ public class MyAdsList extends AppCompatActivity {
     Item item;
     ProgressDialog csprogress;
     Boolean result;
+    ItemsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_ads_list);
+        items = new ArrayList<>();
+        listView = (ListView) findViewById(R.id.list);
+        adapter = new ItemsAdapter(getApplicationContext(), items);
+        listView.setAdapter(adapter);
         final Handler handler = new Handler();
         Timer timer = new Timer();
         TimerTask doAsynchronousTask = new TimerTask() {
@@ -52,7 +57,13 @@ public class MyAdsList extends AppCompatActivity {
                 handler.post(new Runnable() {
                     public void run() {
                         try {
+                            items.clear();
                             new AdLoad().execute();
+                            new AdLoad1().execute();
+                            new AdLoad2().execute();
+                            new AdLoad3().execute();
+                            new AdLoad4().execute();
+                            new AdLoad5().execute();
                         } catch (Exception ignored) {
                         }
                     }
@@ -72,6 +83,12 @@ public class MyAdsList extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_logged_in, menu);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override
@@ -140,13 +157,10 @@ public class MyAdsList extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-
             result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
             if (result) {
-                items = new ArrayList<>();
-                items.clear();
                 List<ParseObject> objects = null;
-                parseQuery = ParseQuery.getQuery("Advertisement");
+                parseQuery = ParseQuery.getQuery("Agriculture");
                 parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
                 parseQuery.orderByDescending("createdAt");
                 parseQuery.setLimit(1000);
@@ -155,20 +169,21 @@ public class MyAdsList extends AppCompatActivity {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                assert objects != null;
-                for (i = 0; i < objects.size(); i++) {
-                    parseObject = objects.get(i);
-                    item = new Item();
-                    item.settTitle(parseObject.getString("Title"));
-                    item.settCategory(parseObject.getString("Category"));
-                    item.settObjectId(parseObject.getObjectId());
-                    ParseFile parseFile = parseObject.getParseFile("image0");
-                    try {
-                        item.settImageBitmap(parseFile.getData());
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
+                if (objects != null) {
+                    for (i = 0; i < objects.size(); i++) {
+                        parseObject = objects.get(i);
+                        item = new Item();
+                        item.settTitle(parseObject.getString("Title"));
+                        item.settCategory(parseObject.getString("Category"));
+                        item.settObjectId(parseObject.getObjectId());
+                        ParseFile parseFile = parseObject.getParseFile("image0");
+                        try {
+                            item.settImageBitmap(parseFile.getData());
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        items.add(item);
                     }
-                    items.add(item);
                 }
             }
             return null;
@@ -176,17 +191,296 @@ public class MyAdsList extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+
             if (!result) {
                 Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_LONG).show();
             }
-            listView = (ListView) findViewById(R.id.list);
-            ItemsAdapter adapter = new ItemsAdapter(getApplicationContext(), items);
-            listView.setAdapter(adapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
                     Item i1 = items.get(i);
+                    it.putExtra("category", i1.gettCategory());
+                    it.putExtra("objectId", i1.gettObjectId());
+                    startActivity(it);
+                }
+            });
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private class AdLoad1 extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+            if (result) {
+                List<ParseObject> objects = null;
+                parseQuery = ParseQuery.getQuery("Home");
+                parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
+                parseQuery.orderByDescending("createdAt");
+                parseQuery.setLimit(1000);
+                try {
+                    objects = parseQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (objects != null) {
+                    for (i = 0; i < objects.size(); i++) {
+                        parseObject = objects.get(i);
+                        item = new Item();
+                        item.settTitle(parseObject.getString("Title"));
+                        item.settCategory(parseObject.getString("Category"));
+                        item.settObjectId(parseObject.getObjectId());
+                        ParseFile parseFile = parseObject.getParseFile("image0");
+                        try {
+                            item.settImageBitmap(parseFile.getData());
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        items.add(item);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            if (!result) {
+                Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_LONG).show();
+            }
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
+                    Item i1 = items.get(i);
+                    it.putExtra("category", i1.gettCategory());
+                    it.putExtra("objectId", i1.gettObjectId());
+                    startActivity(it);
+                }
+            });
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private class AdLoad2 extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+            if (result) {
+                List<ParseObject> objects = null;
+                parseQuery = ParseQuery.getQuery("Fruits");
+                parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
+                parseQuery.orderByDescending("createdAt");
+                parseQuery.setLimit(1000);
+                try {
+                    objects = parseQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (objects != null) {
+                    for (i = 0; i < objects.size(); i++) {
+                        parseObject = objects.get(i);
+                        item = new Item();
+                        item.settTitle(parseObject.getString("Title"));
+                        item.settCategory(parseObject.getString("Category"));
+                        item.settObjectId(parseObject.getObjectId());
+                        ParseFile parseFile = parseObject.getParseFile("image0");
+                        try {
+                            item.settImageBitmap(parseFile.getData());
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        items.add(item);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            if (!result) {
+                Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_LONG).show();
+            }
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
+                    Item i1 = items.get(i);
+                    it.putExtra("category", i1.gettCategory());
+                    it.putExtra("objectId", i1.gettObjectId());
+                    startActivity(it);
+                }
+            });
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private class AdLoad3 extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+            if (result) {
+                List<ParseObject> objects = null;
+                parseQuery = ParseQuery.getQuery("Vegetables");
+                parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
+                parseQuery.orderByDescending("createdAt");
+                parseQuery.setLimit(1000);
+                try {
+                    objects = parseQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (objects != null) {
+                    for (i = 0; i < objects.size(); i++) {
+                        parseObject = objects.get(i);
+                        item = new Item();
+                        item.settTitle(parseObject.getString("Title"));
+                        item.settCategory(parseObject.getString("Category"));
+                        item.settObjectId(parseObject.getObjectId());
+                        ParseFile parseFile = parseObject.getParseFile("image0");
+                        try {
+                            item.settImageBitmap(parseFile.getData());
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        items.add(item);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            if (!result) {
+                Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_LONG).show();
+            }
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
+                    Item i1 = items.get(i);
+                    it.putExtra("category", i1.gettCategory());
+                    it.putExtra("objectId", i1.gettObjectId());
+                    startActivity(it);
+                }
+            });
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private class AdLoad4 extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+            if (result) {
+                List<ParseObject> objects = null;
+                parseQuery = ParseQuery.getQuery("Automobiles");
+                parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
+                parseQuery.orderByDescending("createdAt");
+                parseQuery.setLimit(1000);
+                try {
+                    objects = parseQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (objects != null) {
+                    for (i = 0; i < objects.size(); i++) {
+                        parseObject = objects.get(i);
+                        item = new Item();
+                        item.settTitle(parseObject.getString("Title"));
+                        item.settCategory(parseObject.getString("Category"));
+                        item.settObjectId(parseObject.getObjectId());
+                        ParseFile parseFile = parseObject.getParseFile("image0");
+                        try {
+                            item.settImageBitmap(parseFile.getData());
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        items.add(item);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            if (!result) {
+                Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_LONG).show();
+            }
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
+                    Item i1 = items.get(i);
+                    it.putExtra("category", i1.gettCategory());
+                    it.putExtra("objectId", i1.gettObjectId());
+                    startActivity(it);
+                }
+            });
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private class AdLoad5 extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+            if (result) {
+                List<ParseObject> objects = null;
+                parseQuery = ParseQuery.getQuery("Hotels");
+                parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
+                parseQuery.orderByDescending("createdAt");
+                parseQuery.setLimit(1000);
+                try {
+                    objects = parseQuery.find();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (objects != null) {
+                    for (i = 0; i < objects.size(); i++) {
+                        parseObject = objects.get(i);
+                        item = new Item();
+                        item.settTitle(parseObject.getString("Title"));
+                        item.settCategory(parseObject.getString("Category"));
+                        item.settObjectId(parseObject.getObjectId());
+                        ParseFile parseFile = parseObject.getParseFile("image0");
+                        try {
+                            item.settImageBitmap(parseFile.getData());
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                        items.add(item);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            if (!result) {
+                Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_LONG).show();
+            }
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent it = new Intent(getApplicationContext(), MyAdDetails.class);
+                    Item i1 = items.get(i);
+                    it.putExtra("category", i1.gettCategory());
                     it.putExtra("objectId", i1.gettObjectId());
                     startActivity(it);
                 }

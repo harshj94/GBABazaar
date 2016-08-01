@@ -38,6 +38,7 @@ public class ItemsAdapter extends ArrayAdapter<Item> {
 
         blob = itemsArrayList.get(position).gettImageBitmap();
         Bitmap bmp = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+        bmp = Bitmap.createScaledBitmap(bmp, 200, 200, false);
         imageView.setImageBitmap(bmp);
         title.setText(itemsArrayList.get(position).gettTitle());
         category.setText(itemsArrayList.get(position).gettCategory());

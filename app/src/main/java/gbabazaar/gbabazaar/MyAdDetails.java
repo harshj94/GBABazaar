@@ -111,8 +111,7 @@ public class MyAdDetails extends AppCompatActivity {
             ConnectionDetector connectionDetector = new ConnectionDetector(getApplicationContext());
             result = connectionDetector.isConnectingToInternet();
             if (result) {
-
-                parseQuery = ParseQuery.getQuery("Advertisement");
+                parseQuery = ParseQuery.getQuery(getIntent().getStringExtra("category"));
                 parseQuery.orderByDescending("createdAt");
                 try {
                     parseObject = parseQuery.get(objectId);
@@ -137,6 +136,7 @@ public class MyAdDetails extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            csprogress.dismiss();
             if (!result) {
                 new AlertDialog.Builder(MyAdDetails.this)
                         .setTitle("Internet Connection Error")
@@ -223,7 +223,6 @@ public class MyAdDetails extends AppCompatActivity {
                 }
             });
 
-            csprogress.dismiss();
         }
     }
 
