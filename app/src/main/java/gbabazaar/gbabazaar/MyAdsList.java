@@ -47,7 +47,29 @@ public class MyAdsList extends AppCompatActivity {
         setContentView(R.layout.activity_my_ads_list);
         items = new ArrayList<>();
         listView = (ListView) findViewById(R.id.list);
-        new AdLoad().execute();
+        adapter = new ItemsAdapter(getApplicationContext(), items);
+        listView.setAdapter(adapter);
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            Boolean result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
+                            if (result) {
+                                new AdLoad().execute();
+                            } else {
+                                Toast.makeText(MyAdsList.this, "It seems as if you are not connected to internet.", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, 60000);
         Toast.makeText(MyAdsList.this, "Your ads will be displayed here soon.", Toast.LENGTH_SHORT).show();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -135,6 +157,7 @@ public class MyAdsList extends AppCompatActivity {
         protected Void doInBackground(Void... voids) {
             result = new ConnectionDetector(getApplicationContext()).isConnectingToInternet();
             if (result) {
+                items.clear();
                 List<ParseObject> objects = null;
                 parseQuery = ParseQuery.getQuery("Agriculture");
                 parseQuery.whereContains("UserObjectId", ParseUser.getCurrentUser().getObjectId());
@@ -153,11 +176,12 @@ public class MyAdsList extends AppCompatActivity {
                         item.settCategory(parseObject.getString("Category"));
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
-                        try {
-                            item.settImageBitmap(parseFile.getData());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        item.settURL(parseFile.getUrl());
+//                        try {
+//                            item.settImageBitmap(parseFile.getData());
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
                         items.add(item);
                     }
                 }
@@ -209,11 +233,12 @@ public class MyAdsList extends AppCompatActivity {
                         item.settCategory(parseObject.getString("Category"));
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
-                        try {
-                            item.settImageBitmap(parseFile.getData());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        item.settURL(parseFile.getUrl());
+//                        try {
+//                            item.settImageBitmap(parseFile.getData());
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
                         items.add(item);
                     }
                 }
@@ -265,11 +290,12 @@ public class MyAdsList extends AppCompatActivity {
                         item.settCategory(parseObject.getString("Category"));
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
-                        try {
-                            item.settImageBitmap(parseFile.getData());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        item.settURL(parseFile.getUrl());
+//                        try {
+//                            item.settImageBitmap(parseFile.getData());
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
                         items.add(item);
                     }
                 }
@@ -321,11 +347,12 @@ public class MyAdsList extends AppCompatActivity {
                         item.settCategory(parseObject.getString("Category"));
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
-                        try {
-                            item.settImageBitmap(parseFile.getData());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        item.settURL(parseFile.getUrl());
+//                        try {
+//                            item.settImageBitmap(parseFile.getData());
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
                         items.add(item);
                     }
                 }
@@ -377,11 +404,12 @@ public class MyAdsList extends AppCompatActivity {
                         item.settCategory(parseObject.getString("Category"));
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
-                        try {
-                            item.settImageBitmap(parseFile.getData());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        item.settURL(parseFile.getUrl());
+//                        try {
+//                            item.settImageBitmap(parseFile.getData());
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
                         items.add(item);
                     }
                 }
@@ -433,11 +461,12 @@ public class MyAdsList extends AppCompatActivity {
                         item.settCategory(parseObject.getString("Category"));
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
-                        try {
-                            item.settImageBitmap(parseFile.getData());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        item.settURL(parseFile.getUrl());
+//                        try {
+//                            item.settImageBitmap(parseFile.getData());
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
                         items.add(item);
                     }
                 }
@@ -489,11 +518,12 @@ public class MyAdsList extends AppCompatActivity {
                         item.settCategory(parseObject.getString("Category"));
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
-                        try {
-                            item.settImageBitmap(parseFile.getData());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        item.settURL(parseFile.getUrl());
+//                        try {
+//                            item.settImageBitmap(parseFile.getData());
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
                         items.add(item);
                     }
                 }
@@ -516,8 +546,7 @@ public class MyAdsList extends AppCompatActivity {
                     startActivity(it);
                 }
             });
-            adapter = new ItemsAdapter(getApplicationContext(), items);
-            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
     }
 }

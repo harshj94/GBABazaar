@@ -8,7 +8,7 @@ public class Item {
     private String title;
     private String category;
     private String objectId;
-    private byte[] imageBitmap;
+    private String url;
 
     public String gettTitle() {
         return title;
@@ -34,11 +34,12 @@ public class Item {
         this.objectId = objectId;
     }
 
-    public byte[] gettImageBitmap() {
-        return imageBitmap;
+    public String gettURL() {
+        return url;
     }
 
-    public void settImageBitmap(byte[] imageBitmap) {
-        this.imageBitmap = imageBitmap;
+    public void settURL(String url) {
+        this.url = url;
     }
+
 }

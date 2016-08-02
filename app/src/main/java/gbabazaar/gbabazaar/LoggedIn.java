@@ -157,11 +157,12 @@ public class LoggedIn extends AppCompatActivity {
                     item.settCategory(parseObject.getString("Category"));
                     item.settObjectId(parseObject.getObjectId());
                     ParseFile parseFile = parseObject.getParseFile("image0");
-                    try {
-                        item.settImageBitmap(parseFile.getData());
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
+                    item.settURL(parseFile.getUrl());
+//                    try {
+//                        item.settImageBitmap(parseFile.getData());
+//                    } catch (ParseException e1) {
+//                        e1.printStackTrace();
+//                    }
                     items.add(item);
                 }
             }
@@ -203,11 +204,12 @@ public class LoggedIn extends AppCompatActivity {
                 item.settCategory(parseObject.getString("Category"));
                 item.settObjectId(parseObject.getObjectId());
                 ParseFile parseFile = parseObject.getParseFile("image0");
-                try {
-                    item.settImageBitmap(parseFile.getData());
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
-                }
+                item.settURL(parseFile.getUrl());
+//                try {
+//                    item.settImageBitmap(parseFile.getData());
+//                } catch (ParseException e1) {
+//                    e1.printStackTrace();
+//                }
                 items.add(item);
             }
             return null;
