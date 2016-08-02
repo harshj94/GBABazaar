@@ -47,7 +47,7 @@ public class ItemsAdapter extends ArrayAdapter<Item> {
                 .with(context)
                 .load(itemsArrayList.get(position).gettURL())
                 .centerCrop()
-                .placeholder(R.drawable.iconnnn)
+                .placeholder(R.drawable.placeholderr)
                 .crossFade()
                 .into(imageView);
         title.setText(itemsArrayList.get(position).gettTitle());

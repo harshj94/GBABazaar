@@ -157,12 +157,12 @@ public class MyAdDetails extends AppCompatActivity {
             name = (TextView) findViewById(R.id.name);
             city = (TextView) findViewById(R.id.city);
 
-            title.setText(parseObject.getString("Title"));
-            category.setText(parseObject.getString("Category"));
-            rate.setText(parseObject.getString("Rate"));
-            description.setText(parseObject.getString("Description"));
-            name.setText(parseObject.getString("Name"));
-            city.setText(parseObject.getString("City"));
+            title.setText("Title: " + parseObject.getString("Title"));
+            category.setText("Category: " +parseObject.getString("Category"));
+            rate.setText("Rate: "+parseObject.getString("Rate"));
+            description.setText("Description: "+parseObject.getString("Description"));
+            name.setText("Name: "+parseObject.getString("Name"));
+            city.setText("City: "+parseObject.getString("City"));
 
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
             lp.gravity = Gravity.NO_GRAVITY;
