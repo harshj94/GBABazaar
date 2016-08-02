@@ -136,6 +136,7 @@ public class LoggedIn extends AppCompatActivity {
                 items.clear();
                 List<ParseObject> objects = null;
                 parseQuery = ParseQuery.getQuery(cat);
+                parseQuery.whereContains("Status","accepted");
                 parseQuery.orderByDescending("createdAt");
                 parseQuery.setLimit(1000);
                 try {
@@ -205,11 +206,6 @@ public class LoggedIn extends AppCompatActivity {
                 item.settObjectId(parseObject.getObjectId());
                 ParseFile parseFile = parseObject.getParseFile("image0");
                 item.settURL(parseFile.getUrl());
-//                try {
-//                    item.settImageBitmap(parseFile.getData());
-//                } catch (ParseException e1) {
-//                    e1.printStackTrace();
-//                }
                 items.add(item);
             }
             return null;

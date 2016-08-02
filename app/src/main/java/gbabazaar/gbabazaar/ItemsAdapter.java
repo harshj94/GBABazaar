@@ -1,9 +1,6 @@
 package gbabazaar.gbabazaar;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +15,8 @@ import java.util.ArrayList;
 public class ItemsAdapter extends ArrayAdapter<Item> {
     private final Context context;
     private final ArrayList<Item> itemsArrayList;
-    Bitmap bmp;
     int pos;
     ImageView imageView;
-    private byte[] blob;
 
     public ItemsAdapter(Context context, ArrayList<Item> itemsArrayList) {
 

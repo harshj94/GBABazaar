@@ -177,11 +177,6 @@ public class MyAdsList extends AppCompatActivity {
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
                         item.settURL(parseFile.getUrl());
-//                        try {
-//                            item.settImageBitmap(parseFile.getData());
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace();
-//                        }
                         items.add(item);
                     }
                 }
@@ -234,11 +229,6 @@ public class MyAdsList extends AppCompatActivity {
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
                         item.settURL(parseFile.getUrl());
-//                        try {
-//                            item.settImageBitmap(parseFile.getData());
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace();
-//                        }
                         items.add(item);
                     }
                 }
@@ -291,11 +281,6 @@ public class MyAdsList extends AppCompatActivity {
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
                         item.settURL(parseFile.getUrl());
-//                        try {
-//                            item.settImageBitmap(parseFile.getData());
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace();
-//                        }
                         items.add(item);
                     }
                 }
@@ -348,11 +333,6 @@ public class MyAdsList extends AppCompatActivity {
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
                         item.settURL(parseFile.getUrl());
-//                        try {
-//                            item.settImageBitmap(parseFile.getData());
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace();
-//                        }
                         items.add(item);
                     }
                 }
@@ -405,11 +385,6 @@ public class MyAdsList extends AppCompatActivity {
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
                         item.settURL(parseFile.getUrl());
-//                        try {
-//                            item.settImageBitmap(parseFile.getData());
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace();
-//                        }
                         items.add(item);
                     }
                 }
@@ -462,11 +437,6 @@ public class MyAdsList extends AppCompatActivity {
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
                         item.settURL(parseFile.getUrl());
-//                        try {
-//                            item.settImageBitmap(parseFile.getData());
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace();
-//                        }
                         items.add(item);
                     }
                 }
@@ -519,11 +489,6 @@ public class MyAdsList extends AppCompatActivity {
                         item.settObjectId(parseObject.getObjectId());
                         ParseFile parseFile = parseObject.getParseFile("image0");
                         item.settURL(parseFile.getUrl());
-//                        try {
-//                            item.settImageBitmap(parseFile.getData());
-//                        } catch (ParseException e1) {
-//                            e1.printStackTrace();
-//                        }
                         items.add(item);
                     }
                 }
