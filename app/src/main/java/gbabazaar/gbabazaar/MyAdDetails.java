@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -45,6 +46,7 @@ public class MyAdDetails extends AppCompatActivity {
     byte[][] bytes;
     LinearLayout linearLayout;
     ProgressDialog csprogress;
+    String cat;
     int images, i;
     ImageView imageView;
     Boolean result;
@@ -55,6 +57,7 @@ public class MyAdDetails extends AppCompatActivity {
         setContentView(R.layout.activity_ad_details);
         call = (TextView) findViewById(R.id.call);
         call.setText("Delete");
+        cat = getIntent().getStringExtra("category");
         objectId = getIntent().getStringExtra("objectId");
         linearLayout = (LinearLayout) findViewById(R.id.place);
         imageView = (ImageView) findViewById(R.id.back);
@@ -158,11 +161,11 @@ public class MyAdDetails extends AppCompatActivity {
             city = (TextView) findViewById(R.id.city);
 
             title.setText("Title: " + parseObject.getString("Title"));
-            category.setText("Category: " +parseObject.getString("Category"));
-            rate.setText("Rate: "+parseObject.getString("Rate"));
-            description.setText("Description: "+parseObject.getString("Description"));
-            name.setText("Name: "+parseObject.getString("Name"));
-            city.setText("City: "+parseObject.getString("City"));
+            category.setText("Category: " + parseObject.getString("Category"));
+            rate.setText("Rate: " + parseObject.getString("Rate"));
+            description.setText("Description: " + parseObject.getString("Description") + "\n\nStatus: " + parseObject.getString("Status"));
+            name.setText("Name: " + parseObject.getString("Name"));
+            city.setText("City: " + parseObject.getString("City"));
 
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
             lp.gravity = Gravity.NO_GRAVITY;
@@ -256,6 +259,14 @@ public class MyAdDetails extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             csprogress.dismiss();
+            ParseQuery<ParseObject> parseQuery1 = new ParseQuery<>("GameScore");
+            parseQuery1.getInBackground("ajCfInBYGZ", new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject object, ParseException e) {
+                    object.increment(cat);
+                    object.saveInBackground();
+                }
+            });
             if (!result) {
                 new AlertDialog.Builder(MyAdDetails.this)
                         .setTitle("Internet Connection Error")
@@ -268,8 +279,8 @@ public class MyAdDetails extends AppCompatActivity {
                             }
                         })
                         .show();
-            }
-            Toast.makeText(MyAdDetails.this, "Your ad will be deleted soon. Thank You.", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(MyAdDetails.this, "Your ad will be deleted soon. Thank You.", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
