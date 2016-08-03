@@ -30,7 +30,6 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        alertDialog = null;
         setContentView(R.layout.activity_home);
         alertDialog = null;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
