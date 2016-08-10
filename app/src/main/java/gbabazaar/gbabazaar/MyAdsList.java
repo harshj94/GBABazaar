@@ -141,6 +141,7 @@ public class MyAdsList extends AppCompatActivity {
                     } else {
                         Intent it = new Intent(MyAdsList.this, Home.class);
                         startActivity(it);
+
                         finish();
                     }
                 }
@@ -152,6 +153,15 @@ public class MyAdsList extends AppCompatActivity {
     }
 
     private class AdLoad extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            csprogress = new ProgressDialog(MyAdsList.this);
+            csprogress.show();
+            csprogress.setCancelable(false);
+            csprogress.setMessage("Please wait...");
+        }
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -511,6 +521,7 @@ public class MyAdsList extends AppCompatActivity {
                     startActivity(it);
                 }
             });
+            csprogress.dismiss();
             adapter.notifyDataSetChanged();
         }
     }

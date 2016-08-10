@@ -6,7 +6,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:scaleType="fitXY"
         android:src="@drawable/transparent" />
 
@@ -58,9 +58,9 @@
                 android:layout_weight="1"
                 android:background="#00000000"
                 android:drawablePadding="10dp"
-                android:singleLine="true"
                 android:hint="Mobile Number"
                 android:paddingLeft="10dp"
+                android:singleLine="true"
                 android:textColor="#fff"
                 android:textColorHint="#fff"
                 android:textSize="13dp" />
